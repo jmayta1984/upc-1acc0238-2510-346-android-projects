@@ -1,25 +1,51 @@
 package pe.edu.upc.agendacompose.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import pe.edu.upc.agendacompose.data.repository.ContactRepositoryImpl
+import pe.edu.upc.agendacompose.domain.model.Contact
+import pe.edu.upc.agendacompose.domain.usecase.AddContactUseCase
+import pe.edu.upc.agendacompose.domain.usecase.GetContactUseCase
 
 @Preview
 @Composable
 fun Home() {
     val navController = rememberNavController()
+    val repository = ContactRepositoryImpl()
+    val addContactUseCase = AddContactUseCase(repository)
+    val getContactUseCase = GetContactUseCase(repository)
 
-    NavHost(navController = navController, startDestination = "ContactDetail") {
+    val contacts =
+        getContactUseCase.invoke().collectAsState(emptyList())
 
-        composable("ContactList") {
-            ContactList()
+
+    NavHost(
+        navController = navController,
+        startDestination = Routes.ContactList.route
+    ) {
+
+        composable(Routes.ContactList.route) {
+            ContactList(contacts = contacts.value) {
+                navController.navigate(route = Routes.ContactDetail.route)
+            }
         }
 
-        composable("ContactDetail") {
-            ContactDetail()
+        composable(Routes.ContactDetail.route) {
+            ContactDetail { contact ->
+                addContactUseCase(contact.name, contact.phone, contact.company)
+                navController.popBackStack()
+            }
         }
     }
+}
+
+sealed class Routes(val route: String) {
+    data object ContactList : Routes(route = "ContactList")
+    data object ContactDetail : Routes(route = "ContactDetail")
 }

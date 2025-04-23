@@ -18,10 +18,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pe.edu.upc.agendacompose.domain.model.Contact
 
 @Preview
 @Composable
-fun ContactDetail(modifier: Modifier = Modifier) {
+fun ContactDetail(
+    modifier: Modifier = Modifier,
+    onSave: (Contact) -> Unit = {}
+) {
 
     val name = remember {
         mutableStateOf("")
@@ -35,11 +39,12 @@ fun ContactDetail(modifier: Modifier = Modifier) {
         mutableStateOf("")
     }
 
-    Scaffold (
+    Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-
+                    val contact = Contact(1,name.value, company.value, phone.value)
+                    onSave(contact)
                 }
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
