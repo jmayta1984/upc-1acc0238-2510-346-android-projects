@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import pe.edu.upc.agendacompose.data.repository.ContactRepositoryImpl
 import pe.edu.upc.agendacompose.domain.model.Contact
 import pe.edu.upc.agendacompose.domain.usecase.AddContactUseCase
+import pe.edu.upc.agendacompose.domain.usecase.DeleteContactUseCase
 import pe.edu.upc.agendacompose.domain.usecase.GetContactUseCase
 import pe.edu.upc.agendacompose.domain.usecase.UpdateContactUseCase
 
@@ -22,6 +23,7 @@ fun Home() {
     val addContactUseCase = AddContactUseCase(repository)
     val getContactUseCase = GetContactUseCase(repository)
     val updateContactUseCase = UpdateContactUseCase(repository)
+    val deleteContactUseCase = DeleteContactUseCase(repository)
 
     val contacts =
         getContactUseCase.invoke().collectAsState(emptyList())
@@ -49,14 +51,20 @@ fun Home() {
         }
 
         composable(Routes.ContactDetail.route) {
-            ContactDetail(contact = selectedContact.value) { contact ->
-                if (selectedContact.value == null) {
-                    addContactUseCase(contact)
-                } else {
-                    updateContactUseCase(contact)
-                }
-                navController.popBackStack()
-            }
+            ContactDetail(
+                contact = selectedContact.value,
+                onSave = { contact ->
+                    if (selectedContact.value == null) {
+                        addContactUseCase(contact)
+                    } else {
+                        updateContactUseCase(contact)
+                    }
+                    navController.popBackStack()
+                },
+                onDelete = {
+                    deleteContactUseCase(it)
+                    navController.popBackStack()
+                })
         }
     }
 }

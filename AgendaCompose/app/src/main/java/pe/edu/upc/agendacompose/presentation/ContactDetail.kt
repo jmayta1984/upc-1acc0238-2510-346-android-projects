@@ -12,9 +12,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,7 +28,8 @@ import kotlin.random.Random
 fun ContactDetail(
     modifier: Modifier = Modifier,
     contact: Contact? = null,
-    onSave: (Contact) -> Unit = {}
+    onSave: (Contact) -> Unit = {},
+    onDelete: (Int) -> Unit = {}
 ) {
 
     val name = remember {
@@ -66,6 +69,7 @@ fun ContactDetail(
     { padding ->
         Column(
             verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -105,6 +109,14 @@ fun ContactDetail(
                 onValueChange = {
                     company.value = it
                 })
+
+            TextButton(
+                enabled = contact != null,
+                onClick = {
+                    contact?.id?.let { onDelete(it) }
+                }) {
+                Text("Delete contact")
+            }
         }
     }
 }

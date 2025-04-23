@@ -20,7 +20,7 @@ class ContactRepositoryImpl : ContactRepository {
     }
 
     override fun deleteContact(id: Int) {
-        TODO("Not yet implemented")
+        _contacts.value = contacts.value.filterNot { it.id == id }
     }
 
     override fun updateContact(contact: Contact) {
