@@ -12,6 +12,7 @@ import pe.edu.upc.agendacompose.data.repository.ContactRepositoryImpl
 import pe.edu.upc.agendacompose.domain.model.Contact
 import pe.edu.upc.agendacompose.domain.usecase.AddContactUseCase
 import pe.edu.upc.agendacompose.domain.usecase.GetContactUseCase
+import pe.edu.upc.agendacompose.domain.usecase.UpdateContactUseCase
 
 @Preview
 @Composable
@@ -20,25 +21,40 @@ fun Home() {
     val repository = ContactRepositoryImpl()
     val addContactUseCase = AddContactUseCase(repository)
     val getContactUseCase = GetContactUseCase(repository)
+    val updateContactUseCase = UpdateContactUseCase(repository)
 
     val contacts =
         getContactUseCase.invoke().collectAsState(emptyList())
 
-
+    val selectedContact = remember {
+        mutableStateOf<Contact?>(null)
+    }
     NavHost(
         navController = navController,
         startDestination = Routes.ContactList.route
     ) {
 
         composable(Routes.ContactList.route) {
-            ContactList(contacts = contacts.value) {
-                navController.navigate(route = Routes.ContactDetail.route)
-            }
+            ContactList(
+                contacts = contacts.value,
+                onAdd = {
+                    selectedContact.value = null
+                    navController.navigate(route = Routes.ContactDetail.route)
+                },
+                onSelect = {
+                    selectedContact.value = it
+                    navController.navigate(route = Routes.ContactDetail.route)
+                }
+            )
         }
 
         composable(Routes.ContactDetail.route) {
-            ContactDetail { contact ->
-                addContactUseCase(contact.name, contact.phone, contact.company)
+            ContactDetail(contact = selectedContact.value) { contact ->
+                if (selectedContact.value == null) {
+                    addContactUseCase(contact)
+                } else {
+                    updateContactUseCase(contact)
+                }
                 navController.popBackStack()
             }
         }

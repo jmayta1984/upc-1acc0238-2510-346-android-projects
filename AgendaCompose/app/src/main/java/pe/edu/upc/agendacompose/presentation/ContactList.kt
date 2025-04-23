@@ -20,27 +20,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import pe.edu.upc.agendacompose.domain.model.Contact
-import pe.edu.upc.agendacompose.domain.usecase.AddContactUseCase
-import pe.edu.upc.agendacompose.domain.usecase.GetContactUseCase
 
 @Preview
 @Composable
 fun ContactList(
     modifier: Modifier = Modifier,
-    //addContactUseCase: AddContactUseCase = AddContactUseCase(),
-    //getContactUseCase: GetContactUseCase = GetContactUseCase(),
     contacts: List<Contact> = emptyList(),
-    onAdd: () -> Unit = { }
+    onAdd: () -> Unit = { },
+    onSelect: (Contact) -> Unit = {}
 ) {
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-
                     onAdd()
                 }
             ) {
@@ -50,17 +44,31 @@ fun ContactList(
     ) { padding ->
         LazyColumn(modifier = modifier.padding(padding)) {
             items(contacts) { contact ->
-                ContactListItem(contact)
+                ContactListItem(
+                    contact = contact,
+                    onSelect = onSelect
+                )
             }
         }
     }
 }
 
 @Composable
-fun ContactListItem(contact: Contact, modifier: Modifier = Modifier) {
-    Card(modifier = modifier.padding(8.dp)) {
+fun ContactListItem(
+    modifier: Modifier = Modifier,
+    contact: Contact,
+    onSelect: (Contact) -> Unit
+) {
+    Card(
+        modifier = modifier.padding(8.dp),
+        onClick = {
+            onSelect(contact)
+        }
+    ) {
         Row(
-            modifier = modifier.fillMaxWidth().padding(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

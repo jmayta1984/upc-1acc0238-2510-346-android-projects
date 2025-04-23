@@ -19,32 +19,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pe.edu.upc.agendacompose.domain.model.Contact
+import kotlin.random.Random
 
 @Preview
 @Composable
 fun ContactDetail(
     modifier: Modifier = Modifier,
+    contact: Contact? = null,
     onSave: (Contact) -> Unit = {}
 ) {
 
     val name = remember {
-        mutableStateOf("")
+        mutableStateOf(contact?.name ?: "")
     }
 
     val phone = remember {
-        mutableStateOf("")
+        mutableStateOf(contact?.phone ?: "")
     }
 
     val company = remember {
-        mutableStateOf("")
+        mutableStateOf(contact?.company ?: "")
     }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val contact = Contact(1,name.value, company.value, phone.value)
-                    onSave(contact)
+                    val id = contact?.id ?: (0..999).random()
+
+                    onSave(
+                        Contact(
+                            id = id,
+                            name = name.value,
+                            company = company.value,
+                            phone = phone.value
+                        )
+                    )
                 }
             ) {
                 Icon(Icons.Default.Save, contentDescription = null)
