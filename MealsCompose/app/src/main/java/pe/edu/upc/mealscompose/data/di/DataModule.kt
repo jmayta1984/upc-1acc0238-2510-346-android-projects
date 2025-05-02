@@ -2,6 +2,7 @@ package pe.edu.upc.mealscompose.data.di
 
 import pe.edu.upc.mealscompose.data.remote.ApiConstants
 import pe.edu.upc.mealscompose.data.remote.CategoryService
+import pe.edu.upc.mealscompose.data.repository.CategoryRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -16,5 +17,9 @@ object DataModule {
 
     fun getCategoryService(): CategoryService {
         return getRetrofit().create(CategoryService::class.java)
+    }
+
+    fun getCategoryRepository(): CategoryRepository {
+        return CategoryRepository(getCategoryService())
     }
 }
