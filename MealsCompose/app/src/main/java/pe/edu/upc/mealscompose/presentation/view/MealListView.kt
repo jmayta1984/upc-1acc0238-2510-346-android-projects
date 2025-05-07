@@ -67,6 +67,7 @@ fun MealListItemView(meal: Meal) {
                     onClick = {},
                     modifier = Modifier
                         .align(Alignment.TopEnd)
+                        .clip(CircleShape)
                         .background(Color.White)
 
                 ) {
