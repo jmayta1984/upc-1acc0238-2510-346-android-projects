@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -20,6 +21,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,14 +46,26 @@ fun MealListView(
     Scaffold { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(meals.value) { meal ->
-                MealListItemView(meal)
+                MealListItemView(meal){ isFavorite ->
+                    if (isFavorite) {
+                        mealListViewModel.insertMeal(meal)
+                    } else {
+                        mealListViewModel.deleteMeal(meal)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun MealListItemView(meal: Meal) {
+fun MealListItemView(
+    meal: Meal,
+    toggleFavorite: (Boolean) -> Unit
+    ) {
+    val isFavorite = remember {
+        mutableStateOf(meal.isFavorite)
+    }
     Card(modifier = Modifier.padding(8.dp)) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Box {
@@ -64,7 +79,11 @@ fun MealListItemView(meal: Meal) {
                     contentScale = ContentScale.Crop
                 )
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                        isFavorite.value = !isFavorite.value
+                        meal.isFavorite = isFavorite.value
+                        toggleFavorite(isFavorite.value)
+                    },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .clip(CircleShape)
@@ -72,7 +91,12 @@ fun MealListItemView(meal: Meal) {
 
                 ) {
                     Icon(
-                        Icons.Default.FavoriteBorder,
+                        if (isFavorite.value) {
+                            Icons.Default.Favorite
+                        } else {
+                            Icons.Default.FavoriteBorder
+
+                        },
                         contentDescription = null,
                         modifier = Modifier.size(32.dp)
 

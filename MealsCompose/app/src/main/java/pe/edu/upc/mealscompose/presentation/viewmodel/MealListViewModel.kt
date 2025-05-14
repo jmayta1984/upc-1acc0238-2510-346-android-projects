@@ -17,4 +17,16 @@ class MealListViewModel(val mealRepository: MealRepository): ViewModel() {
            _meals.value = mealRepository.getMealsByCategory(category)
         }
     }
+
+    fun insertMeal(meal: Meal){
+        viewModelScope.launch {
+            mealRepository.insertMeal(meal)
+        }
+    }
+
+    fun deleteMeal(meal: Meal){
+        viewModelScope.launch {
+            mealRepository.deleteMeal(meal)
+        }
+    }
 }
