@@ -39,6 +39,7 @@ fun Home(){
     val selectedIndex = remember {
         mutableStateOf(0)
     }
+    val articleSearchViewModel = PresentationModule.getArticleSearchViewModel()
 
     Scaffold(
         bottomBar = {
@@ -63,7 +64,9 @@ fun Home(){
     ) { padding ->
         NavHost(navController, startDestination = "search", modifier = Modifier.padding(padding)) {
 
-            composable("search") {  }
+            composable("search") {
+                ArticleSearchView(articleSearchViewModel)
+            }
             composable("article") {  }
             composable("favorites") {  }
 
